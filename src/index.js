@@ -1,1 +1,3 @@
-module.exports = require('./XLSXWriteStream.js').default;
+import XLSXWriteStream from './XLSXWriteStream.js';
+
+export default XLSXWriteStream;
