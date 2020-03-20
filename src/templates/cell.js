@@ -1,21 +1,26 @@
-import { isDate, isString, isNumber, isBoolean } from 'lodash';
-import { sanitize, getNumberFormat, getDateFormat } from '../utils';
+import { TypeStyleKey, getBestNumberTypeStyleKey } from './styles';
+import { sanitize } from '../utils';
 
-export default function (value, cell, shouldFormat) {
-    if (isDate(value)) {
-        const unixTimestamp = value.getTime();
-        const officeTimestamp = (unixTimestamp / 86400000) + 25569;
-        const maybeFormat = shouldFormat && getDateFormat();
-        return `<c r="${cell}" t="n"${maybeFormat ? ` s="${maybeFormat}"` : ''}><v>${officeTimestamp}</v></c>`;
-    } else if (isString(value)) {
-        return `<c r="${cell}" t="inlineStr"><is><t>${sanitize(value)}</t></is></c>`;
-    } else if (isBoolean(value)) {
-        return `<c r="${cell}" t="inlineStr"><is><t>${value}</t></is></c>`;
-    } else if (isNumber(value)) {
-        const maybeFormat = shouldFormat && getNumberFormat(value);
-        return `<c r="${cell}" t="n"${maybeFormat ? ` s="${maybeFormat}"` : ''}><v>${value}</v></c>`;
-    } else if (value) {
-        return `<c r="${cell}" t="inlineStr"><is><t>${sanitize(`${value}`)}</t></is></c>`;
+const isDate = d => d instanceof Date && !isNaN(d);
+const isNumber = n => typeof n === 'number';
+const isString = s => typeof s === 'string';
+const isBoolean = b => b === !!b;
+const isFormulaString = s => s.startsWith('=');
+
+export default function(value, cell, format, styles) {
+  if (isDate(value)) {
+    return `<c r="${cell}" t="d" ${format ? `s="${styles.getStyleId(TypeStyleKey.DATE)}"` : ''}><v>${value.toISOString()}</v></c>`;
+  } else if (isString(value)) {
+    if (isFormulaString(value)) {
+      return `<c r="${cell}" t="str"><f>${sanitize(value).substr(1)}</f></c>`;
     }
-    return '';
+    return `<c r="${cell}" t="inlineStr" ${format ? `s="${styles.getStyleId(TypeStyleKey.TEXT)}"` : ''}><is><t>${sanitize(value)}</t></is></c>`;
+  } else if (isBoolean(value)) {
+    return `<c r="${cell}" t="b"><v>${value ? 1 : 0}</v></c>`;
+  } else if (isNumber(value)) {
+    return `<c r="${cell}" t="n" ${format ? `s="${styles.getStyleId(getBestNumberTypeStyleKey(value))}"` : ''}><v>${value}</v></c>`;
+  } else if (value) {
+    return `<c r="${cell}" t="inlineStr"><is><t>${sanitize(`${value}`)}</t></is></c>`;
+  }
+  return '';
 }

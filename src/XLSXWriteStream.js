@@ -1,74 +1,81 @@
 import Archiver from 'archiver';
-import { PassThrough } from 'stream';
+import { Transform, PassThrough } from 'stream';
 import * as templates from './templates';
 import XLSXRowTransform from './XLSXRowTransform';
 
-/** Class representing a XLSX Write Stream. */
-export default class XLSXWriteStream {
-    /**
-     * Create new Stream
-     * @param options {Object}
-     * @param options.shouldFormat {Boolean} - If set to true writer is formatting cells with numbers and dates
-     */
-    constructor(options = {}) {
-        this.options = options;
-        this.zip = Archiver('zip', {
-            forceUTC: true,
-        });
-        this.zip.catchEarlyExitAttached = true;
+/**
+ * XLSX Write Stream base class
+ */
+export default class XLSXWriteStream extends Transform {
+  /**
+   * Create new Stream
+   * @class XLSXWriteStream
+   * @extends Transform
+   * @param {Object} [options]
+   * @param {Boolean} [options.format=true] - If set to false writer will not format cells with number, date, boolean and text.
+   * @param {Object} [options.styleDefs] - If set you can overwrite default standard type styles by other standard ones or even define custom `formatCode`.
+   * @param {Boolean} [options.immediateInitialization=false] - If set to true writer will initialize archive and start compressing xlsx common stuff immediately, adding subsequently a little memory and processor footprint. If not, initialization will be delayed to the first data processing.
+   */
+  constructor(options) {
+    super({ objectMode: true });
 
-        this.zip.append(templates.ContentTypes, {
-            name: '[Content_Types].xml',
-        });
+    this.initialized = false;
 
-        this.zip.append(templates.Rels, {
-            name: '_rels/.rels',
-        });
+    this.options = Object.assign({ format: true, immediateInitialization: false }, options);
 
-        this.zip.append(templates.Workbook, {
-            name: 'xl/workbook.xml',
-        });
+    if (this.options.immediateInitialization) this._initializePipeline();
+  }
 
-        this.zip.append(templates.Styles, {
-            name: 'xl/styles.xml',
-        });
+  /**
+   * Initialize pipeline with xlsx archive common files
+   */
+  _initializePipeline() {
+    this.zip = Archiver('zip', { forceUTC: true });
+    this.zip.catchEarlyExitAttached = true;
 
-        this.zip.append(templates.WorkbookRels, {
-            name: 'xl/_rels/workbook.xml.rels',
-        });
+    // Common xlsx archive files (not editable)
+    this.zip.append(templates.ContentTypes, { name: '[Content_Types].xml' });
+    this.zip.append(templates.Rels, { name: '_rels/.rels' });
+    this.zip.append(templates.Workbook, { name: 'xl/workbook.xml' });
+    this.zip.append(templates.WorkbookRels, { name: 'xl/_rels/workbook.xml.rels' });
 
-        this.zip.on('warning', (err) => {
-            console.warn(err);
-        });
+    // Style xlsx definitions (one time generation)
+    const styles = new templates.Styles(this.options.styleDefs);
+    this.zip.append(styles.render(), { name: 'xl/styles.xml' });
 
-        this.zip.on('error', (err) => {
-            console.error(err);
-        });
+    this.zip
+      .on('data', data => this.push(data))
+      .on('warning', err => this.emit('warning', err))
+      .on('error', err => this.error('error', err));
 
-        this.finalize = this.finalize.bind(this);
-    }
+    this.toXlsxRow = new XLSXRowTransform({ ...this.options, styles });
+    this.sheetStream = new PassThrough();
+    this.sheetStream.write(templates.SheetHeader);
+    this.toXlsxRow.pipe(this.sheetStream);
+    this.zip.append(this.sheetStream, {
+      name: 'xl/worksheets/sheet1.xml'
+    });
 
-    setInputStream(stream) {
-        const toXlsxRow = new XLSXRowTransform(this.options.shouldFormat);
-        const transformedStream = stream.pipe(toXlsxRow);
-        this.sheetStream = new PassThrough();
-        this.sheetStream.write(templates.SheetHeader);
-        transformedStream.on('end', this.finalize);
-        // stream.on('data', () => console.log('Input stream data'));
-        transformedStream.pipe(this.sheetStream);
-        this.zip.append(this.sheetStream, {
-            name: 'xl/worksheets/sheet1.xml',
-        });
-    }
+    this.initialized = true;
+  }
 
-    getOutputStream() {
-        return this.zip;
-    }
-    /**
-     * Finalize the zip archive
-     */
-    finalize() {
-        this.sheetStream.end(templates.SheetFooter);
-        return this.zip.finalize();
-    }
+  _transform(chunk, encoding, callback) {
+    if (!this.initialized) this._initializePipeline();
+    this.toXlsxRow.write(chunk, encoding, callback);
+  }
+
+  _flush(callback) {
+    if (!this.initialized) this._initializePipeline();
+    this._finalize().then(() => {
+      callback();
+    });
+  }
+
+  /**
+   * Finalize the zip archive
+   */
+  _finalize() {
+    this.sheetStream.end(templates.SheetFooter);
+    return this.zip.finalize();
+  }
 }
