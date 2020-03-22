@@ -47,7 +47,8 @@ describe('XLSXWriteStream', function() {
 async function expectEqualXlsxContent(tmpFilePath, modelFilePath) {
   const readAll = async readable => {
     const chunks = [];
-    for await (let chunk of readable) {
+    let chunk;
+    while ((chunk = readable.read()) != null) {
       chunks.push(chunk);
     }
     return Buffer.concat(chunks);
