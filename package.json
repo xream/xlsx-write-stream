@@ -27,12 +27,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atomictech/xlsx-stream-writer"
+    "url": "git+https://github.com/atomictech/xlsx-write-stream"
   },
   "bugs": {
-    "url": "https://github.com/atomictech/xlsx-stream-writer/issues"
+    "url": "https://github.com/atomictech/xlsx-write-stream/issues"
   },
-  "homepage": "https://github.com/atomictech/xlsx-stream-writer",
+  "homepage": "https://github.com/atomictech/xlsx-write-stream",
   "files": [
     "dist"
   ],

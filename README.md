@@ -1,10 +1,10 @@
 # ⏩ XLSX Write Stream ⏩
 
-[![Build Status](https://travis-ci.org/apifytech/xlsx-stream.svg)](https://travis-ci.org/apifytech/xlsx-stream)
-[![Version](https://img.shields.io/npm/v/xlsx-write-stream.svg)](https://www.npmjs.com/package/xlsx-write-stream)
-[![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/apifytech/xlsx-stream#readme)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/apifytech/xlsx-stream/graphs/commit-activity)
-[![License: Apache-2.0](https://img.shields.io/github/license/apifytech/xlsx-stream)](https://github.com/apifytech/xlsx-stream/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/atomictech/xlsx-write-stream.svg)](https://travis-ci.org/atomictech/xlsx-write-stream)
+[![Version](https://img.shields.io/npm/v/@atomictech/xlsx-write-stream.svg)](https://www.npmjs.com/package/@atomictech/xlsx-write-stream)
+[![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/atomictech/xlsx-write-stream#readme)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/atomictech/xlsx-write-stream/graphs/commit-activity)
+[![License: Apache-2.0](https://img.shields.io/github/license/atomictech/xlsx-write-stream)](https://github.com/atomictech/xlsx-write-stream/blob/master/LICENSE)
 
 > Stream huge amount of data into an XLSX generated file stream with minimum memory footprint.
 
@@ -150,11 +150,12 @@ Cell type formatting:
 
 - text (default: `numFmtId: 49` - enforce text even if could be interpreted as number)
 - date (default: `formatCode: 'yyyy-mm-dd'` - )
-- number [int] (default: `numFmtId: 1`)
-- number [float] (default: `numFmtId: 2`)
-- number [bigInt] (default: `numFmtId: 3`)
-- number [bigFloat] (default: `numFmtId: 4`)
-- number [expNumber] (default: `numFmtId: 1`1)
+- number
+  - int (default: `numFmtId: 1`)
+  - float (default: `numFmtId: 2`)
+  - bigInt (default: `numFmtId: 3`)
+  - bigFloat (default: `numFmtId: 4`)
+  - expNumber (default: `numFmtId: 1`)
 
 XLSX Write Stream - **NOT** supported:
 
@@ -183,4 +184,4 @@ Give a ⭐️ if this project helped you!
 
 ## 📝 License
 
-This project is [Apache-2.0](https://github.com/apifytech/xlsx-stream/blob/master/LICENSE) licensed.
+This project is [Apache-2.0](https://github.com/atomictech/xlsx-write-stream/blob/master/LICENSE) licensed.
