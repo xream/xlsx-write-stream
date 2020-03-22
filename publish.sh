@@ -11,11 +11,11 @@ NC='\033[0m' # No Color
 
 PACKAGE_NAME=`node -pe "require('./package.json').name"`
 PACKAGE_VERSION=`node -pe "require('./package.json').version"`
-BRANCH=`git status | grep 'On branch' | cut -d ' ' -f 3`
-BRANCH_UP_TO_DATE=`git status | grep 'nothing to commit' | tr -s \n ' '`;
+BRANCH=`git branch --show-current`
+BRANCH_UP_TO_DATE=`git status -uno --short | wc -l`;
 GIT_TAG="v${PACKAGE_VERSION}"
 
-if [ -z "${BRANCH_UP_TO_DATE}" ]; then
+if [ "${BRANCH_UP_TO_DATE}" -ne 0 ]; then
     printf "${RED}You have uncommitted changes!${NC}\n"
     exit 1
 fi
@@ -37,7 +37,7 @@ if [ "${BRANCH}" = "master" ]; then
 # Develop branch gets published as BETA and we don't allow to override tag of existing version.
 elif [ "${BRANCH}" = "develop" ]; then
     echo "Publishing version ${PACKAGE_VERSION} with tag \"beta\" ..."
-    RUNNING_FROM_SCRIPT=1 npm publish --tag beta
+    RUNNING_FROM_SCRIPT=1 npm publish --access public --tag beta
 
     echo "Tagging git commit with ${GIT_TAG} ..."
     git tag ${GIT_TAG}
