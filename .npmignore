@@ -1,7 +1,12 @@
-/test
-.editorconfig
+.nyc_output
+.vscode
+test
+coverage
 .babelrc
+.editorconfig
 .eslintignore
 .eslintrc
-testgenerator.js
+.nycrc
+.prettierrc
+publish.sh
 yarn.lock

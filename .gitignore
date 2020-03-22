@@ -65,7 +65,9 @@ typings/
 # dotenv environment variables file
 .env
 
-generated.xlsx
+# IDE files
 .idea
-test/.tmp
 .vscode
+
+# Test temporary files
+test/.tmp
