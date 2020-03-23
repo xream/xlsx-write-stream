@@ -33,7 +33,7 @@ describe('XLSXWriteStream', function() {
     const fileWriteStream = fs.createWriteStream(tmpFilePath);
 
     xlsxWriteStream.pipe(fileWriteStream);
-    xlsxWriteStream.write([1, '02', new Date('2015-10-21T16:29:00.000Z'), true, false, '=40+2']);
+    xlsxWriteStream.write([1, '02', new Date('2015-10-21T16:29:00.000Z'), true, false, '=40+2', '🦄']);
     xlsxWriteStream.end();
 
     await new Promise(resolve => {

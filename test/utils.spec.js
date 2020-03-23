@@ -28,17 +28,3 @@ describe('The getCellId function', function() {
     expect(result).to.be.equal(expectedResult);
   });
 });
-
-describe('The sanitize function', function() {
-  it('escapes XML entities &, >, <', function() {
-    const expectedResult = '&amp;&lt;&gt;';
-    const result = sanitize('&<>');
-    expect(result).to.be.equal(expectedResult);
-  });
-
-  it('removes invalid XML characters', function() {
-    const expectedResult = '';
-    const result = sanitize('\u001A');
-    expect(result).to.be.equal(expectedResult);
-  });
-});

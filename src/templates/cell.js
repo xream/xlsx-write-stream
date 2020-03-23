@@ -1,5 +1,5 @@
 import { TypeStyleKey, getBestNumberTypeStyleKey } from './styles';
-import { sanitize } from '../utils';
+import xmlEscape from 'xml-escape';
 
 const isDate = d => d instanceof Date && !isNaN(d);
 const isNumber = n => typeof n === 'number';
@@ -12,15 +12,15 @@ export default function(value, cell, format, styles) {
     return `<c r="${cell}" t="d" ${format ? `s="${styles.getStyleId(TypeStyleKey.DATE)}"` : ''}><v>${value.toISOString()}</v></c>`;
   } else if (isString(value)) {
     if (isFormulaString(value)) {
-      return `<c r="${cell}" t="str"><f>${sanitize(value).substr(1)}</f></c>`;
+      return `<c r="${cell}" t="str"><f>${xmlEscape(value).substr(1)}</f></c>`;
     }
-    return `<c r="${cell}" t="inlineStr" ${format ? `s="${styles.getStyleId(TypeStyleKey.TEXT)}"` : ''}><is><t>${sanitize(value)}</t></is></c>`;
+    return `<c r="${cell}" t="inlineStr" ${format ? `s="${styles.getStyleId(TypeStyleKey.TEXT)}"` : ''}><is><t>${xmlEscape(value)}</t></is></c>`;
   } else if (isBoolean(value)) {
     return `<c r="${cell}" t="b"><v>${value ? 1 : 0}</v></c>`;
   } else if (isNumber(value)) {
     return `<c r="${cell}" t="n" ${format ? `s="${styles.getStyleId(getBestNumberTypeStyleKey(value))}"` : ''}><v>${value}</v></c>`;
   } else if (value) {
-    return `<c r="${cell}" t="inlineStr"><is><t>${sanitize(`${value}`)}</t></is></c>`;
+    return `<c r="${cell}" t="inlineStr"><is><t>${xmlEscape(`${value}`)}</t></is></c>`;
   }
   return '';
 }

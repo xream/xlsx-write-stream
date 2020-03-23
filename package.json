@@ -46,7 +46,8 @@
     "prepublishOnly": "(test $RUNNING_FROM_SCRIPT || (echo \"You must use publish.sh instead of 'npm publish' directly!\"; exit 1)) && npm test && npm run lint"
   },
   "dependencies": {
-    "archiver": "^3.1.1"
+    "archiver": "^3.1.1",
+    "xml-escape": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
