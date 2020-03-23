@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { getCellId, sanitize } from '../src/utils';
+import { getCellId } from '../src/utils';
 
 describe('The getCellId function', function() {
   it('returns correct ID for first cell and row', function() {
