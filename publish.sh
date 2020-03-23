@@ -20,7 +20,7 @@ if [ "${BRANCH_UP_TO_DATE}" -ne 0 ]; then
     exit 1
 fi
 
-echo "Pushing to git ..."
+echo "Pushing to git..."
 git push
 
 # Master gets published as LATEST if that version doesn't exists yet and retagged as LATEST otherwise.
@@ -39,10 +39,8 @@ elif [ "${BRANCH}" = "develop" ]; then
     echo "Publishing version ${PACKAGE_VERSION} with tag \"beta\" ..."
     RUNNING_FROM_SCRIPT=1 npm publish --access public --tag beta
 
-    echo "Tagging git commit with ${GIT_TAG} ..."
-    git tag ${GIT_TAG}
+    echo "Pushing tag ${GIT_TAG}..."
     git push origin ${GIT_TAG}
-    echo "Git tag: ${GIT_TAG} created."
 
 # For other branch throw an error.
 else
