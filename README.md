@@ -131,7 +131,7 @@ Be aware that first row chunk is determinant in the transform configuration proc
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | [options] | `Object` |  |  |
-| [options.headers] | `Array|Boolean` | `false` | If set to an array they will be printed in first row, no matter what is streamed in input. If receiving objects from input stream, only properties given in headers will be printed following headers order. If set to true it only has effect when streaming objects in order to print inferred headers in first place.|
+| [options.headers] | `Array\|Boolean` | `false` | If set to an array they will be printed in first row, no matter what is streamed in input. If receiving objects from input stream, only properties given in headers will be printed following headers order. If set to true it only has effect when streaming objects in order to print inferred headers in first place.|
 | [options.format] | `Boolean` | `true` | If set to false writer will not format cells with number, date, boolean and text. |
 | [options.styleDefs] | [`StyleDefs`](#styledefs) |  | If set you can overwrite default standard type styles by other standard ones or even define custom `formatCode`. |
 | [options.immediateInitialization] | `Boolean` | `false` | If set to true writer will initialize archive and start compressing xlsx common stuff immediately, adding subsequently a little memory and processor footprint. If not, initialization will be delayed to the first data processing. |
