@@ -77,7 +77,7 @@ export default class XLSXWriteStream extends Transform {
     this.zip
       .on('data', data => this.push(data))
       .on('warning', err => this.emit('warning', err))
-      .on('error', err => this.error('error', err));
+      .on('error', err => this.emit('error', err));
 
     this.toXlsxRow = new XLSXRowTransform({ format: this.options.format, styles });
     this.sheetStream = new PassThrough();
