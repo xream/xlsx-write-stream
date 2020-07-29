@@ -112,7 +112,7 @@ export default class XLSXWriteStream extends Transform {
     }
   }
 
-  _flush(callback) {
+  _final(callback) {
     if (!this.initialized) this._initialize();
     this._finalize().then(() => {
       callback();
