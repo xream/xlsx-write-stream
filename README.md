@@ -12,22 +12,22 @@ XLSX Write Stream is a streaming writer for XLSX spreadsheets. Its purpose is to
 
 ## Table of content
 
-- [⏩ XLSX Write Stream ⏩](#%e2%8f%a9-xlsx-write-stream-%e2%8f%a9)
+- [⏩ XLSX Write Stream ⏩](#-xlsx-write-stream-)
   - [Table of content](#table-of-content)
-  - [📦 Install](#%f0%9f%93%a6-install)
-  - [🦄 Usage](#%f0%9f%a6%84-usage)
+  - [📦 Install](#-install)
+  - [🦄 Usage](#-usage)
     - [Basic pipe](#basic-pipe)
     - [Basic write](#basic-write)
     - [Custom styles](#custom-styles)
-  - [🔧 API](#%f0%9f%94%a7-api)
-    - [XLSXWriteStream ⇐ `Transform`](#xlsxwritestream-%e2%87%90-transform)
+  - [🔧 API](#-api)
+    - [XLSXWriteStream ⇐ `Transform`](#xlsxwritestream--transform)
     - [new XLSXWriteStream([options])](#new-xlsxwritestreamoptions)
     - [StyleDefs](#styledefs)
-  - [🚧 Compatibility](#%f0%9f%9a%a7-compatibility)
-  - [👥 Authors](#%f0%9f%91%a5-authors)
-  - [🤝 Contributing](#%f0%9f%a4%9d-contributing)
-  - [⭐️ Show your support](#%e2%ad%90%ef%b8%8f-show-your-support)
-  - [📝 License](#%f0%9f%93%9d-license)
+  - [🚧 Compatibility](#-compatibility)
+  - [👥 Authors](#-authors)
+  - [🤝 Contributing](#-contributing)
+  - [⭐️ Show your support](#️-show-your-support)
+  - [📝 License](#-license)
 
 ## 📦 Install
 
@@ -79,11 +79,11 @@ xlsxWriter.pipe(writeStream);
 ```js
 import XLSXWriteStream from '@atomictech/xlsx-write-stream';
 
-// [optional] Define some headers
-const headers = ['A Number Column', 'A Text Column', 'A Date Column', 'A Boolean Column', 'Another Boolean Column', 'Another Text Column'];
+// [optional] Define some header
+const columns = ['A Number Column', 'A Text Column', 'A Date Column', 'A Boolean Column', 'Another Boolean Column', 'Another Text Column'];
 
 // Initialize the writer
-const xlsxWriter = new XLSXWriteStream({ headers });
+const xlsxWriter = new XLSXWriteStream({ header: true, columns });
 
 // Pipe the writer into a Stream.Writable output stream in order to retrieve XLSX file data,
 // write it into file or send it as HTTP response.
@@ -131,7 +131,8 @@ Be aware that first row chunk is determinant in the transform configuration proc
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | [options] | `Object` |  |  |
-| [options.headers] | `Array\|Boolean` | `false` | If set to an array they will be printed in first row, no matter what is streamed in input. If receiving objects from input stream, only properties given in headers will be printed following headers order. If set to true it only has effect when streaming objects in order to print inferred headers in first place.|
+| [options.header] | `Boolean` | `false` | Display the column names on the first line if the columns option is provided or discovered. |
+| [options.columns] | `Array\|Object` |  | List of properties when records are provided as objects. Work with records in the form of arrays based on index position; order matters. Auto discovered in the first record when the user write objects, can refer to nested properties of the input JSON, see the `header` option on how to print columns names on the first line. |
 | [options.format] | `Boolean` | `true` | If set to false writer will not format cells with number, date, boolean and text. |
 | [options.styleDefs] | [`StyleDefs`](#styledefs) |  | If set you can overwrite default standard type styles by other standard ones or even define custom `formatCode`. |
 | [options.immediateInitialization] | `Boolean` | `false` | If set to true writer will initialize archive and start compressing xlsx common stuff immediately, adding subsequently a little memory and processor footprint. If not, initialization will be delayed to the first data processing. |
