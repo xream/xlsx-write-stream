@@ -1,10 +1,9 @@
 import defaultsDeep from 'lodash/defaultsDeep';
+import isObject from 'lodash/isObject';
 import Archiver from 'archiver';
 import { Transform, PassThrough } from 'stream';
 import * as templates from './templates';
 import XLSXRowTransform from './XLSXRowTransform';
-
-const isBoolean = value => value === !!value;
 
 /**
  * XLSX Write Stream base class
@@ -16,9 +15,10 @@ export default class XLSXWriteStream extends Transform {
    * @class XLSXWriteStream
    * @extends Transform
    * @param {Object} [options]
-   * @param {Array|Boolean} [options.headers=false] - If set to an array they will be printed in first row, no matter what is streamed in input.
-   *                                                  If receiving objects from input stream, only properties given in headers will be printed following headers order.
-   *                                                  If set to true it only has effect when streaming objects in order to print inferred headers in first place.
+   * @param {Boolean} [options.header=false] - Display the column names on the first line if the columns option is provided or discovered.
+   * @param {Array|Object} [options.columns] - List of properties when records are provided as objects.
+   *                                           Work with records in the form of arrays based on index position; order matters.
+   *                                           Auto discovered in the first record when the user write objects, can refer to nested properties of the input JSON, see the `header` option on how to print columns names on the first line.
    * @param {Boolean} [options.format=true] - If set to false writer will not format cells with number, date, boolean and text.
    * @param {Object} [options.styleDefs] - If set you can overwrite default standard type styles by other standard ones or even define custom `formatCode`.
    * @param {Boolean} [options.immediateInitialization=false] - If set to true writer will initialize archive and start compressing xlsx common stuff immediately, adding subsequently a little memory and processor footprint. If not, initialization will be delayed to the first data processing.
@@ -30,7 +30,7 @@ export default class XLSXWriteStream extends Transform {
     this.initialized = false;
     this.arrayMode = null;
 
-    this.options = defaultsDeep({}, options, { headers: false, format: true, immediateInitialization: false });
+    this.options = defaultsDeep({}, options, { header: false, format: true, immediateInitialization: false });
 
     if (this.options.immediateInitialization) this._initializePipeline();
   }
@@ -43,13 +43,11 @@ export default class XLSXWriteStream extends Transform {
 
   _initialize(chunk) {
     this._initializePipeline();
-    this._initializeHeaders(chunk);
+    this._initializeHeader(chunk);
 
     if (chunk) {
       this.arrayMode = Array.isArray(chunk);
-      this.normalize = this.arrayMode
-        ? chunk => this.options.headers.map((value, index) => chunk[index])
-        : chunk => this.options.headers.map(key => chunk[key]);
+      this.normalize =  chunk => this.columns.map(key => chunk[key]);
     }
 
     this.initialized = true;
@@ -90,25 +88,31 @@ export default class XLSXWriteStream extends Transform {
     this.pipelineInitialized = true;
   }
 
-  _initializeHeaders(chunk = []) {
-    const shouldPrintHeaders = !!this.options.headers;
-
+  _initializeHeader(chunk = []) {
     if (Array.isArray(chunk)) {
-      if (isBoolean(this.options.headers)) {
-        // Cannot infer headers from an Array
-        // => Ignore `headers` option silently.
-        this.options.headers = chunk.map(() => undefined);
-        return;
+      this.columns = (this.options.columns ? this.options.columns : chunk).map((value, index) => index);
+
+      if (Array.isArray(this.options.columns)) {
+        this.header = [...this.options.columns];
+      } else if (isObject(this.options.columns)) {
+        this.header = [...Object.values(this.options.columns)];
       }
     } else {
-      if (isBoolean(this.options.headers)) {
-        // Init headers from chunk
-        this.options.headers = [...Object.keys(chunk)];
+      if (Array.isArray(this.options.columns)) {
+        this.header = [...this.options.columns];
+        this.columns = [...this.options.columns];
+      } else if (isObject(this.options.columns)) {
+        this.header = [...Object.values(this.options.columns)];
+        this.columns = [...Object.keys(this.options.columns)];
+      } else {
+        // Init header and columns from chunk
+        this.header =  [...Object.keys(chunk)];
+        this.columns =  [...Object.keys(chunk)];
       }
     }
 
-    if (shouldPrintHeaders) {
-      this.toXlsxRow.write(this.options.headers);
+    if (this.options.header && this.header) {
+      this.toXlsxRow.write(this.header);
     }
   }
 

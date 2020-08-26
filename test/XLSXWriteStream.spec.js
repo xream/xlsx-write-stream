@@ -72,11 +72,11 @@ describe('XLSXWriteStream', function() {
     await expectEqualXlsxContent(tmpFilePath, modelFilePath);
   });
 
-  it('Should handle pushing object rows with headers set to true', async function() {
-    const tmpFilePath = `${tmpFolderPath}/headers-file.xlsx`;
-    const modelFilePath = 'test/resources/headers-file.xlsx';
+  it('Should handle pushing object rows with header set to true', async function() {
+    const tmpFilePath = `${tmpFolderPath}/header-file.xlsx`;
+    const modelFilePath = 'test/resources/header-file.xlsx';
 
-    const xlsxWriteStream = new XLSXWriteStream({ headers: true });
+    const xlsxWriteStream = new XLSXWriteStream({ header: true });
     const fileWriteStream = fs.createWriteStream(tmpFilePath);
 
     xlsxWriteStream.pipe(fileWriteStream);
@@ -90,11 +90,11 @@ describe('XLSXWriteStream', function() {
     await expectEqualXlsxContent(tmpFilePath, modelFilePath);
   });
 
-  it('Should handle pushing object rows with headers set to a specific subset', async function() {
-    const tmpFilePath = `${tmpFolderPath}/headers-subset-file.xlsx`;
-    const modelFilePath = 'test/resources/headers-subset-file.xlsx';
+  it('Should handle pushing object rows with header and columns set to a specific subset', async function() {
+    const tmpFilePath = `${tmpFolderPath}/header-subset-file.xlsx`;
+    const modelFilePath = 'test/resources/header-subset-file.xlsx';
 
-    const xlsxWriteStream = new XLSXWriteStream({ headers: ['col1', 'col3', 'col7'] });
+    const xlsxWriteStream = new XLSXWriteStream({ header: true, columns: ['col1', 'col3', 'col7'] });
     const fileWriteStream = fs.createWriteStream(tmpFilePath);
 
     xlsxWriteStream.pipe(fileWriteStream);
@@ -108,11 +108,11 @@ describe('XLSXWriteStream', function() {
     await expectEqualXlsxContent(tmpFilePath, modelFilePath);
   });
 
-  it('Should handle pushing array rows with headers set', async function() {
-    const tmpFilePath = `${tmpFolderPath}/headers-file.xlsx`;
-    const modelFilePath = 'test/resources/headers-file.xlsx';
+  it('Should handle pushing array rows with header and columns set', async function() {
+    const tmpFilePath = `${tmpFolderPath}/header-file.xlsx`;
+    const modelFilePath = 'test/resources/header-file.xlsx';
 
-    const xlsxWriteStream = new XLSXWriteStream({ headers: Object.keys(testRowObject) });
+    const xlsxWriteStream = new XLSXWriteStream({ header: true, columns: Object.keys(testRowObject) });
     const fileWriteStream = fs.createWriteStream(tmpFilePath);
 
     xlsxWriteStream.pipe(fileWriteStream);
@@ -126,11 +126,11 @@ describe('XLSXWriteStream', function() {
     await expectEqualXlsxContent(tmpFilePath, modelFilePath);
   });
 
-  it('Should handle pushing array rows with headers set to a subset length', async function() {
-    const tmpFilePath = `${tmpFolderPath}/headers-subset-from-start-file.xlsx`;
-    const modelFilePath = 'test/resources/headers-subset-from-start-file.xlsx';
+  it('Should handle pushing array rows with header and columns set to a subset length', async function() {
+    const tmpFilePath = `${tmpFolderPath}/header-subset-from-start-file.xlsx`;
+    const modelFilePath = 'test/resources/header-subset-from-start-file.xlsx';
 
-    const xlsxWriteStream = new XLSXWriteStream({ headers: Object.keys(testRowObject).slice(0, 3) });
+    const xlsxWriteStream = new XLSXWriteStream({ header: true, columns: Object.keys(testRowObject).slice(0, 3) });
     const fileWriteStream = fs.createWriteStream(tmpFilePath);
 
     xlsxWriteStream.pipe(fileWriteStream);
