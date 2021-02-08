@@ -47,7 +47,7 @@ export default class XLSXWriteStream extends Transform {
 
     if (chunk) {
       this.arrayMode = Array.isArray(chunk);
-      this.normalize =  chunk => this.columns.map(key => chunk[key]);
+      this.normalize = chunk => this.columns.map(key => chunk[key]);
     }
 
     this.initialized = true;
@@ -80,7 +80,7 @@ export default class XLSXWriteStream extends Transform {
     this.toXlsxRow = new XLSXRowTransform({ format: this.options.format, styles });
     this.sheetStream = new PassThrough();
     this.sheetStream.write(templates.SheetHeader);
-    this.toXlsxRow.pipe(this.sheetStream);
+    this.toXlsxRow.pipe(this.sheetStream, { end: false });
     this.zip.append(this.sheetStream, {
       name: 'xl/worksheets/sheet1.xml'
     });
@@ -106,8 +106,8 @@ export default class XLSXWriteStream extends Transform {
         this.columns = [...Object.keys(this.options.columns)];
       } else {
         // Init header and columns from chunk
-        this.header =  [...Object.keys(chunk)];
-        this.columns =  [...Object.keys(chunk)];
+        this.header = [...Object.keys(chunk)];
+        this.columns = [...Object.keys(chunk)];
       }
     }
 
@@ -118,9 +118,12 @@ export default class XLSXWriteStream extends Transform {
 
   _final(callback) {
     if (!this.initialized) this._initialize();
-    this._finalize().then(() => {
-      callback();
-    });
+    this.toXlsxRow.end();
+    this.toXlsxRow.on('end', () =>
+      this._finalize().then(() => {
+        callback();
+      })
+    );
   }
 
   /**
