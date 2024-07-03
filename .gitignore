@@ -71,3 +71,8 @@ typings/
 
 # Test temporary files
 test/.tmp
+
+/_*.js
+/pnpm-lock.yaml
+/*.xlsx
+/temp

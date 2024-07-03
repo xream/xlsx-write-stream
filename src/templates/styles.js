@@ -1,19 +1,15 @@
-const generateNumFmt = styleDefinition => `    <numFmt numFmtId="${styleDefinition.numFmtId}" formatCode="${styleDefinition.formatCode}" />`;
-const generateNumFmts = styleDefinitions => {
+const generateNumFmt = (styleDefinition) => `    <numFmt numFmtId="${styleDefinition.numFmtId}" formatCode="${styleDefinition.formatCode}" />`;
+const generateNumFmts = (styleDefinitions) => {
   const customFormats = Object.entries(styleDefinitions).reduce((result, [key, value]) => {
     if (value.formatCode) result[key] = value;
     return result;
   }, {});
-  return `  <numFmts count="${Object.keys(customFormats).length}">\n${Object.values(customFormats)
-    .map(generateNumFmt)
-    .join('\n')}\n  </numFmts>`;
+  return `  <numFmts count="${Object.keys(customFormats).length}">\n${Object.values(customFormats).map(generateNumFmt).join('\n')}\n  </numFmts>`;
 };
 
-const generateXf = styleDefinition => `    <xf numFmtId="${styleDefinition.numFmtId}" fontId="0" fillId="0" borderId="0" xfId="0"/>`;
-const generateCellXfs = styleDefinitions =>
-  `  <cellXfs count="${Object.keys(styleDefinitions).length}">\n${Object.values(styleDefinitions)
-    .map(generateXf)
-    .join('\n')}\n  </cellXfs>`;
+const generateXf = (styleDefinition) => `    <xf numFmtId="${styleDefinition.numFmtId}" fontId="0" fillId="0" borderId="0" xfId="0"/>`;
+const generateCellXfs = (styleDefinitions) =>
+  `  <cellXfs count="${Object.keys(styleDefinitions).length}">\n${Object.values(styleDefinitions).map(generateXf).join('\n')}\n  </cellXfs>`;
 
 export const TypeStyleKey = {
   NUMBER: 'default',
@@ -24,10 +20,10 @@ export const TypeStyleKey = {
   EXP_NUMBER: 'expNumber',
   TEXT: 'text',
   DATE: 'date',
-  DATETIME: 'datetime'
+  DATETIME: 'datetime',
 };
 
-export const getBestNumberTypeStyleKey = number => {
+export const getBestNumberTypeStyleKey = (number) => {
   const positiveNumber = Math.abs(number);
   if (positiveNumber.toString().length >= 11) {
     return TypeStyleKey.EXP_NUMBER;
@@ -47,11 +43,11 @@ export const defaultStyleDefinitions = {
   expNumber: { numFmtId: 11 },
   text: { numFmtId: 49 },
   date: { formatCode: 'yyyy-mm-dd' },
-  datetime: { formatCode: 'yyyy-mm-dd hh:mm:ss' }
+  datetime: { formatCode: 'yyyy-mm-dd hh:mm:ss' },
 };
 
 const minNumFmtId = 200;
-const patchDefinitions = styleDefinitions => {
+const patchDefinitions = (styleDefinitions) => {
   let styleIndex = 0;
   let nextNumFmtId = minNumFmtId;
 
